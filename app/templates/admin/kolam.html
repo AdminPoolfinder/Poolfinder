@@ -1,0 +1,424 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+<div x-data="{ 
+    openEdit: false, 
+    openAdd: false,
+    currentPool: {},
+
+    initEdit(pool) {
+        this.currentPool = JSON.parse(JSON.stringify(pool));
+        this.openEdit = true;
+    },
+
+    initAdd() {
+        this.currentPool = {
+            nama: '', jenis: '', harga: 0, kebersihan: '', fasilitas: '', kedalaman: '',
+            skor_harga: 0, skor_rating: 0, alamat_lengkap: '', kecamatan: '',
+            panjang: '', jalur: '', papan_start: '', pace_clock: '', lokasi: '',
+            rating: 0, air_hangat: '', link_google_maps: ''
+        };
+        this.openAdd = true;
+    }
+}" class="min-h-screen pb-20 bg-[#F8FAFC]">
+
+   <!-- ========================= -->
+<!-- SECTION 1: HEADER (FIX, TIDAK IKUT APAPUN) -->
+<!-- ========================= -->
+<div class="px-4 py-6 bg-white border-b">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-full">
+
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">
+                Manajemen <span class="text-blue-600">Kolam</span>
+            </h2>
+            <p class="text-slate-500 font-medium">
+                Kelola database fasilitas aquatic dan spesifikasi teknis.
+            </p>
+        </div>
+
+        <button @click="initAdd()"
+            class="inline-flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
+            ➕ Tambah Fasilitas
+        </button>
+
+    </div>
+</div>
+
+
+<!-- ========================= -->
+<!-- SECTION 2: TABEL (MODAL AQUATIC REDESIGN) -->
+<!-- ========================= -->
+<div class="p-4">
+
+    <!-- Card Container dengan bayangan lebih halus dan border biru pucat -->
+    <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-2xl shadow-blue-900/5 border border-blue-50 overflow-hidden">
+
+        <!-- SCROLL KHUSUS TABEL SAJA -->
+        <div class="overflow-x-auto custom-scrollbar">
+
+            <table class="w-full text-left border-collapse text-sm">
+
+                <!-- HEADER: Menggunakan gradien lembut dan font ultra-clean -->
+                <thead class="bg-gradient-to-r from-slate-50 to-blue-50/50 text-slate-500 uppercase text-[10px] tracking-widest font-black border-b border-blue-100">
+                    <tr>
+                        <th class="p-5 text-center w-16 text-blue-400">#</th>
+                        <th class="p-5 min-w-[200px]">Nama Kolam</th>
+                        <th class="p-5 min-w-[140px]">Kecamatan</th>
+                        <th class="p-5 min-w-[250px]">Alamat</th>
+                        <th class="p-5 text-center">Panjang</th>
+                        <th class="p-5 text-center">Kedalaman</th>
+                        <th class="p-5 text-center">Jalur</th>
+                        <th class="p-5 text-center">Papan Start</th>
+                        <th class="p-5 text-center">Pace Clock</th>
+                        <th class="p-5 text-center">Kebersihan</th>
+                        <th class="p-5 min-w-[220px]">Fasilitas</th>
+                        <th class="p-5 text-center">Air Hangat</th>
+                        <th class="p-5 text-center">Rating</th>
+                        <th class="p-5 text-center">Harga</th>
+                        <th class="p-5 text-center">Maps</th>
+
+                        <!-- AKSI STICKY: Ditambahkan efek shadow tipis untuk membedakan saat di-scroll -->
+                        <th class="p-5 text-center sticky right-0 bg-white/95 backdrop-blur-sm border-l border-blue-50 z-10 shadow-[-10px_0_15px_rgba(0,0,0,0.02)] uppercase">
+                            Aksi
+                        </th>
+                    </tr>
+                </thead>
+
+                <!-- BODY -->
+                <tbody class="divide-y divide-blue-50/50">
+                    {% for pool in pools %}
+                    <tr class="group hover:bg-blue-50/60 transition-all duration-300">
+
+                        <td class="p-5 text-center text-slate-400 font-medium italic">{{ loop.index }}</td>
+                        
+                        <!-- Nama Kolam: Gradient text saat hover -->
+                        <td class="p-5 font-bold text-slate-800">
+                            <span class="group-hover:text-blue-600 transition-colors">{{ pool.nama }}</span>
+                        </td>
+
+                        <td class="p-5">
+                            <span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded-full border border-blue-100">
+                                {{ pool.kecamatan or '-' }}
+                            </span>
+                        </td>
+
+                        <td class="p-5 text-xs text-slate-500 leading-relaxed font-medium">
+                            {{ pool.alamat_lengkap or '-' }}
+                        </td>
+
+                        <!-- Data Teknis: Font bold dan monospaced look -->
+                        <td class="p-5 text-center font-bold text-slate-700 whitespace-nowrap">{{ pool.panjang or '-' }}<span class="text-[10px] text-blue-300 ml-1">m</span></td>
+                        <td class="p-5 text-center font-bold text-slate-700 whitespace-nowrap">{{ pool.kedalaman or '-' }}<span class="text-[10px] text-blue-300 ml-1">m</span></td>
+                        <td class="p-5 text-center font-bold text-slate-700">{{ pool.jalur or '-' }}</td>
+
+                        <!-- Status Badge-style text -->
+                        <td class="p-5 text-center text-xs font-bold uppercase {{ 'text-cyan-500' if pool.papan_start == 'ada' else 'text-slate-300' }}">
+                            {{ pool.papan_start or '-' }}
+                        </td>
+                        <td class="p-5 text-center text-xs font-bold uppercase {{ 'text-cyan-500' if pool.pace_clock == 'ada' else 'text-slate-300' }}">
+                            {{ pool.pace_clock or '-' }}
+                        </td>
+
+                        <td class="p-5 text-center">
+                             <span class="text-xs font-bold text-slate-600 uppercase">{{ pool.kebersihan or '-' }}</span>
+                        </td>
+
+                        <td class="p-5 text-[11px] text-slate-500 italic leading-relaxed">
+                            {{ pool.fasilitas or '-' }}
+                        </td>
+
+                        <td class="p-5 text-center">
+                            {% if pool.air_hangat == 'ya' %}
+                            <span class="flex items-center justify-center gap-1 text-orange-500 font-bold text-[10px] uppercase">
+                                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></span> Ya
+                            </span>
+                            {% else %}
+                            <span class="text-slate-300 text-[10px] uppercase font-bold italic">Cold</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="p-5 text-center">
+                            <div class="inline-flex items-center justify-center gap-1 font-black text-blue-600 bg-blue-50 py-1 px-3 rounded-lg border border-blue-100">
+                                <span class="text-orange-400">★</span> {{ pool.rating or 0 }}
+                            </div>
+                        </td>
+
+                        <td class="p-5 text-center whitespace-nowrap">
+                            <span class="text-sm font-black text-slate-800">
+                                Rp{{ "{:,.0f}".format(pool.harga or 0) }}
+                            </span>
+                        </td>
+
+                        <td class="p-5 text-center">
+                            {% if pool.link_google_maps %}
+                            <a href="{{ pool.link_google_maps }}" target="_blank" 
+                               class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all transform hover:rotate-12 shadow-sm">
+                               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </a>
+                            {% else %}
+                            <span class="text-slate-200">-</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- AKSI STICKY -->
+                        <td class="p-5 text-center sticky right-0 bg-white group-hover:bg-blue-50 transition-all border-l border-blue-50 shadow-[-10px_0_15px_rgba(0,0,0,0.02)]">
+                            <div class="flex justify-center gap-1">
+
+                                <button @click='initEdit({{ pool.to_dict() | tojson | safe }})'
+                                    class="p-2.5 text-blue-400 hover:text-blue-700 hover:bg-blue-100 rounded-xl transition-all active:scale-90">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+
+                                <form method="POST" action="/admin/hapus_kolam/{{ pool.id }}"
+                                      onsubmit="return confirm('Yakin hapus data ini?')">
+                                    <button class="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all active:scale-90">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom Scrollbar Modern */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px; /* Sedikit lebih tebal agar mudah di-scroll di desktop */
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    border: 2px solid #f8fafc; /* Efek padding di dalam scrollbar */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+}
+</style>
+
+    <!-- ================= MODAL TEMPLATE (REUSABLE) ================= -->
+    <style>
+        .input-label { @apply block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1; }
+        .input-field { @apply w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all placeholder:text-slate-300; }
+    </style>
+
+    <!-- MODAL ADD & EDIT -->
+<div x-show="openEdit || openAdd" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 scale-95"
+     x-transition:enter-end="opacity-100 scale-100"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+
+    <!-- Kontainer Putih: Ditambahkan 'max-h-[90vh]' dan 'flex flex-col' -->
+    <div class="bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl my-8 border border-white/20 flex flex-col max-h-[90vh] overflow-hidden">
+        
+        <!-- HEADER: Tetap (Sticky) -->
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
+            <h2 class="text-2xl font-extrabold text-slate-800" x-text="openAdd ? 'Tambah Kolam Baru' : 'Perbarui Fasilitas'"></h2>
+            <button @click="openEdit=false; openAdd=false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <!-- FORM BODY: Area Scrollable -->
+        <!-- Bagian ini akan otomatis memunculkan scroll jika konten lebih tinggi dari layar -->
+        <div class="overflow-y-auto custom-scrollbar">
+            <form :action="openAdd ? '/admin/tambah_kolam' : '/admin/update_kolam/' + currentPool.id" method="POST" 
+                  class="p-8 bg-white/80 backdrop-blur-md">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+                    <!-- INFORMASI UMUM -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b border-blue-100 pb-3">
+                            <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Informasi Umum</h3>
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Nama Fasilitas</label>
+                            <input name="nama" x-model="currentPool.nama" 
+                                   class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+    
+    <!-- Jenis -->
+    <div class="flex flex-col gap-1.5">
+        <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Jenis</label>
+        <select name="jenis" x-model="currentPool.jenis"
+            class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">Pilih Jenis</option>
+            <option value="Umum">Umum</option>
+            <option value="Hotel">Hotel</option>
+        </select>
+    </div>
+
+    <!-- Kecamatan -->
+    <div class="flex flex-col gap-1.5">
+        <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Kecamatan</label>
+        <select name="kecamatan" x-model="currentPool.kecamatan"
+            class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">Pilih Kecamatan</option>
+            <option value="Kedungkandang">Kedungkandang</option>
+            <option value="Sukun">Sukun</option>
+            <option value="Klojen">Klojen</option>
+            <option value="Blimbing">Blimbing</option>
+            <option value="Lowokwaru">Lowokwaru</option>
+        </select>
+    </div>
+
+</div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Alamat Lengkap</label>
+                            <textarea name="alamat_lengkap" x-model="currentPool.alamat_lengkap"
+                                class="w-full px-4 py-3 h-28 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- DIMENSI -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b border-blue-100 pb-3">
+                            <div class="w-1.5 h-6 bg-cyan-500 rounded-full"></div>
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Dimensi & Teknis</h3>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Panjang</label>
+                                <input name="panjang" x-model="currentPool.panjang" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Kedalaman</label>
+                                <input name="kedalaman" x-model="currentPool.kedalaman" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Jalur</label>
+                                <input name="jalur" x-model="currentPool.jalur" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Papan Start</label>
+                                <select name="papan_start" x-model="currentPool.papan_start" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none appearance-none cursor-pointer">
+                                    <option value="">Pilih</option>
+                                    <option value="ada">Ada</option>
+                                    <option value="tidak">Tidak</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Pace Clock</label>
+                                <select name="pace_clock" x-model="currentPool.pace_clock" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none appearance-none cursor-pointer">
+                                    <option value="">Pilih</option>
+                                    <option value="ada">Ada</option>
+                                    <option value="tidak">Tidak</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Harga (Rp)</label>
+                                <input type="number" name="harga" x-model="currentPool.harga" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Rating</label>
+                                <input type="number" step="0.1" name="rating" x-model="currentPool.rating" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FULL WIDTH SECTIONS -->
+                    <div class="md:col-span-2 grid md:grid-cols-2 gap-10 border-t border-blue-50 pt-8">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Fasilitas Tambahan</label>
+                            <textarea name="fasilitas" x-model="currentPool.fasilitas"
+                                class="w-full px-4 py-3 h-32 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Google Maps Link</label>
+                                <input name="link_google_maps" x-model="currentPool.link_google_maps"
+                                    class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">Air Hangat</label>
+                                    <select name="air_hangat" x-model="currentPool.air_hangat" class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer">
+                                        <option value="tidak">Tidak</option>
+                                        <option value="ya">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+    <label class="text-[11px] font-bold text-blue-400 uppercase ml-1">
+        Standar Kebersihan
+    </label>
+
+    <select 
+        name="kebersihan" 
+        x-model="currentPool.kebersihan"
+        class="w-full px-4 h-12 bg-blue-50/50 border border-blue-100 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+    >
+        <option value="">Pilih Kebersihan</option>
+        <option value="Sangat Kotor">Sangat Kotor</option>
+        <option value="Kotor">Kotor</option>
+        <option value="Cukup">Cukup</option>
+        <option value="Bersih">Bersih</option>
+        <option value="Sangat Bersih">Sangat Bersih</option>
+    </select>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BUTTONS: Ikut di-scroll agar tidak menutupi input terakhir -->
+                <div class="flex justify-end gap-4 mt-12 pt-6 border-t border-blue-50">
+                    <button type="button" @click="openEdit=false; openAdd=false"
+                        class="px-8 py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest text-slate-400 hover:bg-slate-100 transition-all">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-12 py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5 transition-all active:scale-95">
+                        Simpan Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Tambahan agar scrollbar cantik sesuai tema aquatic */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #3b82f6;
+    }
+</style>
+
+</div>
+{% endblock %}

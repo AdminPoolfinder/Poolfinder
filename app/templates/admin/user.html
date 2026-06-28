@@ -1,0 +1,166 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+
+<div x-data="{
+    open:false,
+    createOpen:false,
+    editData:{},
+    showPassword:false
+}" class="pb-10">
+
+    <!-- HEADER -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">
+                Manajemen <span class="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">User & Admin</span>
+            </h2>
+            <p class="text-slate-500 font-medium">Atur hak akses dan kredensial akun dalam database.</p>
+        </div>
+
+        <!-- BUTTON TAMBAH -->
+        <button 
+            @click="
+                createOpen=true; 
+                showPassword=false;
+                $nextTick(() => $refs.createForm.reset())
+            "
+            class="px-5 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-2xl text-xs font-black uppercase shadow-lg hover:scale-95 transition">
+            + Tambah Admin
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div>
+        <div class="flex items-center gap-3 mb-4 px-2">
+            <div class="w-2 h-8 bg-indigo-500 rounded-full"></div>
+            <h3 class="text-xl font-bold text-slate-800">Database Admin</h3>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-2xl border overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-black">
+                        <tr>
+                            <th class="p-5">Email</th>
+                            <th class="p-5">Role</th>
+                            <th class="p-5 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in admins %}
+                        <tr class="hover:bg-indigo-50">
+                            <td class="p-5 font-bold">{{ a.username }}</td>
+                            <td class="p-5">
+                                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs rounded-lg">
+                                    System Admin
+                                </span>
+                            </td>
+                            <td class="p-5 text-center">
+                                <button 
+                                    @click="
+                                        open=true; 
+                                        showPassword=false; 
+                                        editData={
+                                            id: {{a.id}}, 
+                                            username: '{{a.username}}'
+                                        }
+                                    "
+                                    class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-bold">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT -->
+    <div x-show="open" x-cloak class="fixed inset-0 flex items-center justify-center bg-black/50">
+
+        <div @click.away="open=false"
+             class="bg-white p-8 rounded-2xl w-full max-w-md">
+
+            <h2 class="text-xl font-bold mb-4">Edit Admin</h2>
+
+            <form :action="'/admin/admin/update/' + editData.id" method="POST" class="space-y-4">
+
+                <input type="text" name="username" x-model="editData.username"
+                    class="w-full p-3 border rounded-lg">
+
+                <input :type="showPassword ? 'text' : 'password'"
+                    name="password"
+                    placeholder="Kosongkan jika tidak diubah"
+                    class="w-full p-3 border rounded-lg">
+
+                <button type="button" @click="showPassword=!showPassword"
+                    class="text-xs text-blue-500">show</button>
+
+                <div class="flex gap-2">
+                    <button type="button" @click="open=false"
+                        class="w-full p-3 bg-gray-200 rounded-lg">
+                        Batal
+                    </button>
+
+                    <button type="submit"
+                        class="w-full p-3 bg-blue-500 text-white rounded-lg">
+                        Simpan
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CREATE -->
+    <div x-show="createOpen" x-cloak class="fixed inset-0 flex items-center justify-center bg-black/50">
+
+        <div @click.away="createOpen=false"
+             class="bg-white p-8 rounded-2xl w-full max-w-md">
+
+            <h2 class="text-xl font-bold mb-4">Tambah Admin Baru</h2>
+
+            <form x-ref="createForm" action="/admin/admin/create" method="POST" class="space-y-4">
+
+                <!-- USERNAME -->
+                <input type="text" name="username" placeholder="Username"
+                    class="w-full p-3 border rounded-lg" required>
+
+                <!-- PASSWORD -->
+                <div>
+                    <input :type="showPassword ? 'text' : 'password'"
+                        name="password"
+                        placeholder="Password"
+                        class="w-full p-3 border rounded-lg" required>
+
+                    <button type="button" @click="showPassword=!showPassword"
+                        class="text-xs text-blue-500 mt-1">show</button>
+                </div>
+
+                <!-- ACTION -->
+                <div class="flex gap-2">
+                    <button type="button" @click="createOpen=false"
+                        class="w-full p-3 bg-gray-200 rounded-lg">
+                        Batal
+                    </button>
+
+                    <button type="submit"
+                        class="w-full p-3 bg-green-500 text-white rounded-lg">
+                        Tambah
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<style>
+[x-cloak] { display:none; }
+</style>
+
+{% endblock %}

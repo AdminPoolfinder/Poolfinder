@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoolFinder - Rekomendasi Kolam Renang Atlet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f0f9ff;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(2, 132, 199, 0.05);
+        }
+
+        .sunlight-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .ripple {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            opacity: 0.3;
+            filter: blur(40px);
+        }
+
+        .nav-link-active {
+            color: #0284c7;
+            font-weight: 800;
+        }
+
+        .nav-link-active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 4px;
+            background: #0284c7;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f9ff; }
+        ::-webkit-scrollbar-thumb { 
+            background: #bae6fd; 
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #7dd3fc; }
+
+        /* Hamburger menu animation */
+        .hamburger-line {
+            display: block;
+            width: 24px;
+            height: 2px;
+            margin: 4px auto;
+            transition: all 0.3s ease;
+            background-color: #1e3a8a;
+            border-radius: 10px;
+        }
+        .hamburger-active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(4px, 4px);
+        }
+        .hamburger-active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger-active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mobile-menu.open {
+            max-height: 400px;
+        }
+    </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="text-slate-900 leading-relaxed">
+
+    <div class="sunlight-bg">
+        <div class="ripple w-48 sm:w-96 h-48 sm:h-96 -top-20 -left-20"></div>
+        <div class="ripple w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] top-1/2 left-1/2 opacity-20"></div>
+    </div>
+
+    <!-- NAVBAR - RESPONSIF -->
+    <nav class="fixed w-full z-[100] glass-morphism top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex justify-between items-center">
+            
+            <!-- LOGO -->
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-400 p-2 sm:p-2.5 rounded-2xl shadow-lg shadow-blue-200 group-hover:scale-110 transition-all duration-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                </div>
+                <div class="flex flex-col leading-tight">
+                    <span class="text-base sm:text-xl font-black text-blue-900 tracking-tighter">POOL<span class="text-blue-500">FINDER</span></span>
+                    <span class="text-[7px] sm:text-[9px] font-extrabold text-blue-400 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Malang Aquatic</span>
+                </div>
+            </a>
+
+            <!-- DESKTOP MENU -->
+            <div class="hidden md:flex items-center gap-6 lg:gap-10 text-[11px] lg:text-[12px] font-bold uppercase tracking-[0.15em] text-slate-400">
+                <a href="{{ url_for('main.beranda') }}" 
+                   class="relative hover:text-blue-600 transition-all {{ 'nav-link-active' if request.endpoint == 'main.beranda' else '' }}">
+                    Beranda
+                </a>
+                <a href="{{ url_for('main.daftar_kolam') }}" 
+                   class="relative hover:text-blue-600 transition-all {{ 'nav-link-active' if request.endpoint == 'main.daftar_kolam' else '' }}">
+                    Daftar Kolam
+                </a>
+                <a href="{{ url_for('main.tentang') }}" 
+                   class="relative hover:text-blue-600 transition-all {{ 'nav-link-active' if request.endpoint == 'main.tentang' else '' }}">
+                    About Us
+                </a>
+            </div>
+
+            <!-- RIGHT SIDE - Desktop & Mobile -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Tombol Halaman Utama (Desktop) -->
+                <a href="{{ url_for('main.index') }}" 
+                   class="hidden sm:flex px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-white border border-blue-100 text-blue-600 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95 whitespace-nowrap">
+                    Halaman Utama
+                </a>
+
+                <!-- Tombol Halaman Utama (Mobile - Icon) -->
+                <a href="{{ url_for('main.index') }}" 
+                   class="flex sm:hidden w-8 h-8 rounded-xl bg-white border border-blue-100 text-blue-600 items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </a>
+
+                <!-- HAMBURGER MENU (Mobile) -->
+                <button id="hamburger-btn" class="block md:hidden w-8 h-8 rounded-xl bg-white border border-blue-100 flex flex-col items-center justify-center hover:bg-blue-50 transition-all active:scale-95">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- MOBILE MENU DROPDOWN -->
+        <div id="mobile-menu" class="mobile-menu md:hidden bg-white/95 backdrop-blur-lg border-b border-blue-50 shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3 text-[13px] font-bold uppercase tracking-[0.1em] text-slate-500">
+                <a href="{{ url_for('main.beranda') }}" 
+                   class="px-4 py-3 rounded-xl hover:bg-blue-50 transition-all {{ 'text-blue-600 bg-blue-50/50' if request.endpoint == 'main.beranda' else '' }}">
+                    Beranda
+                </a>
+                <a href="{{ url_for('main.daftar_kolam') }}" 
+                   class="px-4 py-3 rounded-xl hover:bg-blue-50 transition-all {{ 'text-blue-600 bg-blue-50/50' if request.endpoint == 'main.daftar_kolam' else '' }}">
+                    Daftar Kolam
+                </a>
+                <a href="{{ url_for('main.tentang') }}" 
+                   class="px-4 py-3 rounded-xl hover:bg-blue-50 transition-all {{ 'text-blue-600 bg-blue-50/50' if request.endpoint == 'main.tentang' else '' }}">
+                    About Us
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-16 sm:pt-20 min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER - RESPONSIF -->
+    <footer class="bg-white border-t border-blue-50 py-10 sm:py-16 relative overflow-hidden">
+        <div class="absolute bottom-0 right-0 w-48 sm:w-96 h-48 sm:h-96 bg-blue-50 rounded-full opacity-50 blur-3xl -z-0"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-10">
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <div class="bg-blue-600/10 p-2 sm:p-3 rounded-2xl flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-blue-900 font-black tracking-tighter text-base sm:text-xl block leading-none">POOLFINDER</span>
+                        <span class="text-[8px] sm:text-[10px] text-blue-400 font-bold uppercase tracking-[0.1em]">SPK Rekomendasi Kolam</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end gap-1 sm:gap-2">
+                    <div class="text-slate-400 text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-center md:text-right">
+                        Malang, Jawa Timur &bull; 2026
+                    </div>
+                    <div class="text-blue-900/40 text-[10px] sm:text-xs font-medium text-center md:text-right">
+                        &copy; Developed for Academic Purposes.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- HAMBURGER TOGGLE SCRIPT -->
+    <script>
+        const hamburger = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburger.addEventListener('click', function() {
+            this.classList.toggle('hamburger-active');
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Tutup menu saat link diklik
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('hamburger-active');
+                mobileMenu.classList.remove('open');
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

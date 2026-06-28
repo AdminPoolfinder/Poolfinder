@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PoolFinder Admin Control{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f0f4f8; /* Soft aquatic gray */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
+        }
+
+        .sidebar-item-active {
+            background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%);
+            color: white !important;
+            box-shadow: 0 10px 20px -5px rgba(30, 64, 175, 0.3);
+            transform: translateX(4px);
+        }
+
+        .sidebar-item-active svg {
+            color: white !important;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .aquatic-shadow {
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.05);
+        }
+
+        /* Smooth Transition for hover effects */
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar for aquatic feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="flex min-h-screen text-slate-800 antialiased">
+
+    <aside class="w-80 bg-white/80 backdrop-blur-xl border-r border-slate-200/50 fixed h-full z-50 transition-all">
+        <div class="p-10 mb-2">
+            <div class="flex items-center gap-4 group cursor-pointer">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-400 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-200 transition-transform duration-500 group-hover:rotate-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4a2 2 0 012-2m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter text-slate-900 leading-none italic uppercase">PoolFinder</h1>
+                    <span class="text-[10px] font-black text-cyan-600 uppercase tracking-[0.4em] block mt-1.5 leading-none">Pool Manager</span>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="px-6 space-y-2">
+            <p class="px-4 text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-6 mt-10">Systems Navigation</p>
+            
+            <a href="{{ url_for('main.admin_dashboard') }}" 
+               class="nav-link flex items-center gap-4 px-5 py-4 rounded-[1.5rem] group {{ 'sidebar-item-active' if request.endpoint == 'main.admin_dashboard' else 'text-slate-400 hover:bg-blue-50 hover:text-blue-600' }}">
+                <div class="p-2 rounded-lg bg-current opacity-10 absolute inset-0 hidden group-hover:block"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="font-bold text-[13px] tracking-wide relative z-10">Analitik WSM</span>
+            </a>
+
+            <a href="{{ url_for('main.admin_kolam') }}" 
+               class="nav-link flex items-center gap-4 px-5 py-4 rounded-[1.5rem] group {{ 'sidebar-item-active' if request.endpoint == 'main.admin_kolam' else 'text-slate-400 hover:bg-blue-50 hover:text-blue-600' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span class="font-bold text-[13px] tracking-wide">Data Kolam</span>
+            </a>
+
+            <a href="{{ url_for('main.admin_rating') }}" 
+               class="nav-link flex items-center gap-4 px-5 py-4 rounded-[1.5rem] group {{ 'sidebar-item-active' if request.endpoint == 'main.admin_rating' else 'text-slate-400 hover:bg-blue-50 hover:text-blue-600' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                <span class="font-bold text-[13px] tracking-wide">Ulasan User</span>
+            </a>
+<a href="{{ url_for('main.admin_user') }}" 
+   class="nav-link flex items-center gap-4 px-5 py-4 rounded-[1.5rem] group {{ 'sidebar-item-active' if request.endpoint == 'main.admin_user' else 'text-slate-400 hover:bg-blue-50 hover:text-blue-600' }}">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m0 0a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4 4 4 0 004 4z" />
+    </svg>
+
+    <span class="font-bold text-[13px] tracking-wide">Kelola User</span>
+</a>
+            <div class="mt-16 pt-8 border-t border-slate-100">
+                <a href="{{ url_for('main.evaluasi') }}" 
+                   class="nav-link flex items-center gap-4 px-5 py-4 rounded-[1.5rem] group {{ 'sidebar-item-active' if request.endpoint == 'main.admin_evaluasi' else 'text-slate-400 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04a11.357 11.357 0 00-1.573 5.711c0 4.656 2.766 8.66 6.791 10.5a11.954 11.954 0 007.394 0c4.025-1.84 6.791-5.844 6.791-10.5a11.357 11.357 0 00-1.573-5.711z" />
+                    </svg>
+                    <span class="font-bold text-[13px] tracking-wide">Evaluasi Sistem</span>
+                </a>
+                
+                <a href="{{ url_for('main.admin_logout') }}" 
+                   class="nav-link flex items-center gap-4 px-5 py-4 rounded-[1.5rem] text-rose-300 hover:bg-rose-50 hover:text-rose-500 mt-2 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:-translateX-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span class="font-black text-[10px] uppercase tracking-widest">Logout</span>
+                </a>
+            </div>
+        </nav>
+
+    </aside>
+
+    <div class="flex-1 ml-80">
+        <header class="glass-header py-6 px-12 sticky top-0 z-40 flex justify-between items-center aquatic-shadow">
+    <div class="flex items-center gap-4">
+        <div class="flex -space-x-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></div>
+        </div>
+        <h2 class="text-slate-400 font-bold text-[11px] uppercase tracking-[0.3em]">Operational Area • <span class="text-slate-900">Live</span></h2>
+    </div>
+    
+    <div class="flex items-center gap-8" x-data="{ open:false }">
+
+    <!-- INFO KANAN -->
+    <div class="flex items-center gap-4 pl-8 border-l border-slate-200">
+
+        <div class="text-right hidden lg:block">
+            <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none mb-1.5">
+                Master Account
+            </p>
+            <p class="text-sm font-black text-slate-900 tracking-tight italic">
+    {{ session.get('admin_username', 'Administrator') }}
+</p>
+        </div>
+
+        <!-- AVATAR -->
+        <div class="relative">
+            
+            <div @click="open = !open"
+                 class="cursor-pointer relative group">
+                 
+                <div class="absolute inset-0 bg-blue-400 rounded-2xl blur group-hover:blur-md transition-all opacity-20"></div>
+                
+                <div class="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center text-blue-600 font-black italic relative z-10 text-lg">
+                    {{ session.get('admin_username', 'A')[0]|upper }}
+                </div>
+            </div>
+
+            <!-- POPUP -->
+            <div x-show="open"
+                 x-cloak
+                 @click.outside="open = false"
+                 x-transition
+                 class="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 z-50">
+
+                <!-- AKUN AKTIF -->
+                <div class="mb-3">
+                    <p class="text-xs text-slate-400 mb-2">Akun Aktif</p>
+
+                    <div class="flex items-center gap-3 p-2 rounded-xl bg-blue-50">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold">
+                            {{ session.get('admin_username', 'A')[0]|upper }}
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">
+                                {{ session.get('admin_username', 'Administrator') }}
+                            </p>
+                            <p class="text-xs text-slate-400">Admin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-3">
+
+                <!-- AKUN LAIN (REAL DB) -->
+                <div class="mb-3">
+                    <p class="text-xs text-slate-400 mb-2">Akun Lain</p>
+
+                    {% for a in admins %}
+                        {% if a.username != session.get('admin_username') %}
+                        <div 
+                            onclick="window.location.href='/admin/switch/{{ a.username }}'"
+                            class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+
+                            <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 font-bold">
+                                {{ a.username[0]|upper }}
+                            </div>
+
+                            <div>
+                                <p class="text-sm font-semibold text-slate-700">
+                                    {{ a.username }}
+                                </p>
+                                <p class="text-xs text-slate-400">Admin</p>
+                            </div>
+
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <hr class="my-3">
+
+                <!-- LOGOUT -->
+                <a href="{{ url_for('main.admin_logout') }}"
+                   class="block w-full text-center text-sm font-semibold text-red-500 hover:bg-red-50 py-2 rounded-xl transition">
+                   Logout
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</header>
+
+        <main class="p-12 relative overflow-x-hidden">
+            <div class="absolute top-40 right-20 w-96 h-96 bg-blue-200/20 rounded-full blur-[120px] -z-10"></div>
+            <div class="absolute bottom-20 left-10 w-72 h-72 bg-cyan-200/20 rounded-full blur-[100px] -z-10"></div>
+
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="px-12 py-8 text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+            &copy; 2026 PoolFinder Swim • Weighted Scoring Method Analysis
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

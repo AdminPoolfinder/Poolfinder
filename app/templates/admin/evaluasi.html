@@ -1,0 +1,167 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+<div class="min-h-screen pb-16 sm:pb-20 bg-[#F8FAFC] p-3 sm:p-4 md:p-8">
+
+    <!-- HEADER - RESPONSIF -->
+    <div class="mb-6 sm:mb-8 md:mb-10 px-1 sm:px-2">
+        <div class="flex items-center gap-3 sm:gap-4 mb-2">
+            <div class="p-2 sm:p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200 flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </div>
+
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">
+                Evaluasi Personalization
+            </h1>
+        </div>
+
+        <p class="text-slate-500 font-medium text-sm sm:text-base ml-0 sm:ml-4 md:ml-16">
+            Evaluasi sistem menggunakan <span class="text-blue-600 font-bold">Precision</span>
+            untuk membandingkan profil Atlet vs Basic.
+        </p>
+    </div>
+
+    <!-- INPUT GROUND TRUTH - RESPONSIF -->
+    <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden mb-8 sm:mb-10">
+        <div class="p-4 sm:p-6 md:p-8 border-b bg-slate-50/50">
+            <h3 class="text-[10px] sm:text-sm font-black text-slate-400 uppercase tracking-widest">
+                Input Ground Truth
+            </h3>
+        </div>
+
+        <form method="POST" class="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+
+            <div>
+                <label class="block text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-2 sm:mb-3 ml-1">
+                    Pilih Urutan Kolam Favorit (Ground Truth)
+                </label>
+
+                <select name="ground_truth" multiple
+                    class="w-full border-2 border-slate-100 p-3 sm:p-4 rounded-2xl sm:rounded-3xl h-48 sm:h-72 focus:ring-4 focus:ring-blue-50 focus:border-blue-500 outline-none transition-all font-medium text-slate-700 bg-slate-50/30 text-sm sm:text-base">
+
+                    {% for name, _ in result_basic %}
+                    <option value="{{ name }}">{{ name }}</option>
+                    {% endfor %}
+
+                </select>
+
+                <p class="mt-2 sm:mt-3 text-[10px] sm:text-xs text-slate-400 italic ml-1">
+                    * Pilih beberapa kolam sesuai urutan preferensi (atas = paling disukai)
+                </p>
+            </div>
+
+            <button type="submit"
+                class="bg-slate-900 text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-2xl font-bold hover:bg-blue-600 transition shadow-xl text-sm sm:text-base">
+                Hitung Precision
+            </button>
+
+        </form>
+    </div>
+
+    {% if precision_atlet is not none %}
+
+    <!-- METRICS - RESPONSIF -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-10">
+
+        <!-- ATLET -->
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 md:p-8 text-white shadow-2xl">
+            <h2 class="font-black text-base sm:text-lg md:text-xl mb-4 sm:mb-6">PROFILE ATLET</h2>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white/10 p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase">Precision</p>
+                    <h4 class="text-3xl sm:text-4xl font-black">
+                        {{ precision_atlet|round(2) }}%
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- BASIC -->
+        <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 md:p-8 text-white shadow-2xl">
+            <h2 class="font-black text-base sm:text-lg md:text-xl mb-4 sm:mb-6">PROFILE BASIC</h2>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white/10 p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase">Precision</p>
+                    <h4 class="text-3xl sm:text-4xl font-black">
+                        {{ precision_basic|round(2) }}%
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLES - RESPONSIF -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
+
+        <!-- ATLET TABLE -->
+        <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] border shadow-sm overflow-hidden">
+            <div class="p-4 sm:p-5 md:p-6 border-b bg-slate-50/50 font-bold text-blue-600 text-sm sm:text-base">
+                Ranking Sistem - Atlet
+            </div>
+
+            <!-- TABLE WRAPPER - SCROLL HORIZONTAL DI HP -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[400px] sm:min-w-full">
+                    <thead class="text-[10px] sm:text-xs uppercase text-slate-400">
+                        <tr>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4">Rank</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4">Kolam</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-right">Score</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for name, score in result_atlet %}
+                        <tr class="border-t hover:bg-blue-50">
+                            <td class="px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base">{{ loop.index }}</td>
+                            <td class="px-4 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base">{{ name }}</td>
+                            <td class="px-4 sm:px-6 py-3 sm:py-4 text-right text-blue-600 font-mono text-sm sm:text-base">{{ score }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- BASIC TABLE -->
+        <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] border shadow-sm overflow-hidden">
+            <div class="p-4 sm:p-5 md:p-6 border-b bg-slate-50/50 font-bold text-cyan-600 text-sm sm:text-base">
+                Ranking Sistem - Basic
+            </div>
+
+            <!-- TABLE WRAPPER - SCROLL HORIZONTAL DI HP -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left min-w-[400px] sm:min-w-full">
+                    <thead class="text-[10px] sm:text-xs uppercase text-slate-400">
+                        <tr>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4">Rank</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4">Kolam</th>
+                            <th class="px-4 sm:px-6 py-3 sm:py-4 text-right">Score</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for name, score in result_basic %}
+                        <tr class="border-t hover:bg-cyan-50">
+                            <td class="px-4 sm:px-6 py-3 sm:py-4 text-sm sm:text-base">{{ loop.index }}</td>
+                            <td class="px-4 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base">{{ name }}</td>
+                            <td class="px-4 sm:px-6 py-3 sm:py-4 text-right text-cyan-600 font-mono text-sm sm:text-base">{{ score }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
