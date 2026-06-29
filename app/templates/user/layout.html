@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        [x-cloak] { display: none !important; }
+        
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #f0f9ff;
@@ -66,47 +68,26 @@
         /* Hamburger menu animation */
         .hamburger-line {
             display: block;
-            width: 24px;
+            width: 20px;
             height: 2px;
-            margin: 4px auto;
-            transition: all 0.3s ease;
+            margin: 3px auto;
+            transition: all 0.3s ease-in-out;
             background-color: #1e3a8a;
             border-radius: 10px;
-        }
-        .hamburger-active .hamburger-line:nth-child(1) {
-            transform: rotate(45deg) translate(4px, 4px);
-        }
-        .hamburger-active .hamburger-line:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger-active .hamburger-line:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -5px);
-        }
-
-        /* Mobile menu */
-        .mobile-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .mobile-menu.open {
-            max-height: 400px;
         }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="text-slate-900 leading-relaxed">
+<body class="text-slate-900 leading-relaxed" x-data="{ mobileMenuOpen: false }">
 
     <div class="sunlight-bg">
         <div class="ripple w-48 sm:w-96 h-48 sm:h-96 -top-20 -left-20"></div>
         <div class="ripple w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] top-1/2 left-1/2 opacity-20"></div>
     </div>
 
-    <!-- NAVBAR - RESPONSIF -->
     <nav class="fixed w-full z-[100] glass-morphism top-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex justify-between items-center">
             
-            <!-- LOGO -->
             <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
                 <div class="bg-gradient-to-br from-blue-500 to-cyan-400 p-2 sm:p-2.5 rounded-2xl shadow-lg shadow-blue-200 group-hover:scale-110 transition-all duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,7 +100,6 @@
                 </div>
             </a>
 
-            <!-- DESKTOP MENU -->
             <div class="hidden md:flex items-center gap-6 lg:gap-10 text-[11px] lg:text-[12px] font-bold uppercase tracking-[0.15em] text-slate-400">
                 <a href="{{ url_for('main.beranda') }}" 
                    class="relative hover:text-blue-600 transition-all {{ 'nav-link-active' if request.endpoint == 'main.beranda' else '' }}">
@@ -135,15 +115,12 @@
                 </a>
             </div>
 
-            <!-- RIGHT SIDE - Desktop & Mobile -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Tombol Halaman Utama (Desktop) -->
                 <a href="{{ url_for('main.index') }}" 
                    class="hidden sm:flex px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-white border border-blue-100 text-blue-600 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95 whitespace-nowrap">
                     Halaman Utama
                 </a>
 
-                <!-- Tombol Halaman Utama (Mobile - Icon) -->
                 <a href="{{ url_for('main.index') }}" 
                    class="flex sm:hidden w-8 h-8 rounded-xl bg-white border border-blue-100 text-blue-600 items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm active:scale-95">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,28 +128,33 @@
                     </svg>
                 </a>
 
-                <!-- HAMBURGER MENU (Mobile) -->
-                <button id="hamburger-btn" class="block md:hidden w-8 h-8 rounded-xl bg-white border border-blue-100 flex flex-col items-center justify-center hover:bg-blue-50 transition-all active:scale-95">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
+                <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                        class="inline-flex md:hidden w-8 h-8 rounded-xl bg-white border border-blue-100 flex-col items-center justify-center hover:bg-blue-50 transition-all active:scale-95 focus:outline-none">
+                    <span class="hamburger-line" :class="mobileMenuOpen ? 'transform rotate-45 translate-y-[5px]' : ''"></span>
+                    <span class="hamburger-line" :class="mobileMenuOpen ? 'opacity-0' : ''"></span>
+                    <span class="hamburger-line" :class="mobileMenuOpen ? 'transform -rotate-45 -translate-y-[5px]' : ''"></span>
                 </button>
             </div>
 
         </div>
 
-        <!-- MOBILE MENU DROPDOWN -->
-        <div id="mobile-menu" class="mobile-menu md:hidden bg-white/95 backdrop-blur-lg border-b border-blue-50 shadow-lg">
+        <div x-show="mobileMenuOpen" 
+             x-transition
+             x-cloak
+             class="md:hidden bg-white/95 backdrop-blur-lg border-b border-blue-50 shadow-lg">
             <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3 text-[13px] font-bold uppercase tracking-[0.1em] text-slate-500">
                 <a href="{{ url_for('main.beranda') }}" 
+                   @click="mobileMenuOpen = false"
                    class="px-4 py-3 rounded-xl hover:bg-blue-50 transition-all {{ 'text-blue-600 bg-blue-50/50' if request.endpoint == 'main.beranda' else '' }}">
                     Beranda
                 </a>
                 <a href="{{ url_for('main.daftar_kolam') }}" 
+                   @click="mobileMenuOpen = false"
                    class="px-4 py-3 rounded-xl hover:bg-blue-50 transition-all {{ 'text-blue-600 bg-blue-50/50' if request.endpoint == 'main.daftar_kolam' else '' }}">
                     Daftar Kolam
                 </a>
                 <a href="{{ url_for('main.tentang') }}" 
+                   @click="mobileMenuOpen = false"
                    class="px-4 py-3 rounded-xl hover:bg-blue-50 transition-all {{ 'text-blue-600 bg-blue-50/50' if request.endpoint == 'main.tentang' else '' }}">
                     About Us
                 </a>
@@ -184,7 +166,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- FOOTER - RESPONSIF -->
     <footer class="bg-white border-t border-blue-50 py-10 sm:py-16 relative overflow-hidden">
         <div class="absolute bottom-0 right-0 w-48 sm:w-96 h-48 sm:h-96 bg-blue-50 rounded-full opacity-50 blur-3xl -z-0"></div>
         
@@ -215,26 +196,6 @@
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- HAMBURGER TOGGLE SCRIPT -->
-    <script>
-        const hamburger = document.getElementById('hamburger-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        hamburger.addEventListener('click', function() {
-            this.classList.toggle('hamburger-active');
-            mobileMenu.classList.toggle('open');
-        });
-
-        // Tutup menu saat link diklik
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('hamburger-active');
-                mobileMenu.classList.remove('open');
-            });
-        });
-    </script>
-
     {% block scripts %}{% endblock %}
 </body>
 </html>
